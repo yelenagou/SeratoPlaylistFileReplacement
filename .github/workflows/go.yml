@@ -1,13 +1,9 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
+name: Build Go Executables
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build:
@@ -16,7 +12,7 @@ jobs:
     strategy:
       matrix:
         goos: [linux, windows]
-        goarch: [amd64] # Add more architectures if needed (e.g., arm64)
+        goarch: [amd64]
 
     steps:
     - name: Checkout code
@@ -25,11 +21,21 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: 1.23 # Adjust the Go version to your project requirement
+        go-version: 1.20
+
+    - name: Create bin directory
+      run: mkdir -p ./bin
 
     - name: Build binary
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
       run: |
-        env GOOS=windows GOARCH=amd64 go build -o .bin/app-saradoplaylistreplacement1.exe main.go
+        go build -o ./bin/app-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }} main.go
+
+    - name: Debug bin directory
+      run: ls -la ./bin
+
     - name: Upload binaries
       uses: actions/upload-artifact@v3
       with:
