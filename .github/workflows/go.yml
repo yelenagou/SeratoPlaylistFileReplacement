@@ -39,5 +39,5 @@ jobs:
     - name: Upload binaries
       uses: actions/upload-artifact@v3
       with:
-        name: go-binaries
+        name: seratofilereplace
         path: ./bin/*
